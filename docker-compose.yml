@@ -8,6 +8,6 @@ services:
       - NODE_ENV=development
     volumes:
       - ./:/usr/src/app
-    command: sh -c "cd to_do_list_front && yarn start"
+    command: sh -c "cd front && yarn start"
     ports:
       - "8000:3000"
