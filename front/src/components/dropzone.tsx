@@ -84,9 +84,8 @@ export default function Dropzone(props: Props) {
   const [files, setFiles] = useState<MyFile[]>([])
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [percent, setPercent] = useState(0)
   const [tileFeatured, setTileFeatured] = useState<number[]>([])
-
-  console.log(tileFeatured)
 
   /*
   ドロップした時の処理
@@ -108,10 +107,30 @@ export default function Dropzone(props: Props) {
 
 
   useEffect(() => () => {
-    console.log(3)
     // Make sure to revoke the data uris to avoid memory leaks
     files.forEach(file => URL.revokeObjectURL(file.preview));
   }, [files])
+
+  useEffect(() => () => {
+    // アップロード中はCircularを表示する
+    if (uploading === true) {
+      setPercent(Math.round((progress / files.length) * 100))
+    } else {
+      setPercent(0)
+      // タイルを敷き詰められるように、一部画像のサイズは大きくする
+      switch (files.length % tileCols) {
+        case 0:
+          setTileFeatured([]);
+          break;
+        case 1:
+          setTileFeatured([0, files.length - 1])
+          break;
+        case 2:
+          setTileFeatured([0])
+          break;
+      }
+    }
+  }, [uploading])
 
   // const onUpload = async () => {
   //   console.log('onUpload start');
@@ -174,36 +193,6 @@ export default function Dropzone(props: Props) {
   //   alert("送信されました");
   // }
 
-  // アップロード中はCircularを表示する
-  if (uploading === true) {
-    const percent = Math.round((progress / files.length) * 100)
-    console.log("Loadingの表示。Progreass:" + progress + " Percent:" + percent);
-
-    return (
-      <Grid container className={classes.root} spacing={3} justifyContent="center">
-        <Grid item xs={6}>
-          <Paper variant="outlined" elevation={3} className={classes.paper}>
-            <CircularProgress className={classes.circular} variant="determinate" value={percent} />
-          </Paper>
-        </Grid>
-      </Grid>
-    )
-
-  } else {
-    // タイルを敷き詰められるように、一部画像のサイズは大きくする
-    // switch (files.length % tileCols) {
-    //   case 0:
-    //     setTileFeatured([]);
-    //     break;
-    //   case 1:
-    //     setTileFeatured([0, files.length - 1])
-    //     break;
-    //   case 2:
-    //     setTileFeatured([0])
-    //     break;
-    // }
-  }
-
   // サムネイルの作成
   const thumbs = files.map((file, index) => (
 
@@ -223,9 +212,16 @@ export default function Dropzone(props: Props) {
     </GridListTile>
   ))
 
-  // const diabled_button = (files.length === 0)
+  const upload =
+    <Grid container className={classes.root} spacing={3} justifyContent="center" >
+      <Grid item xs={6}>
+        <Paper variant="outlined" elevation={3} className={classes.paper}>
+          <CircularProgress className={classes.circular} variant="determinate" value={percent} />
+        </Paper>
+      </Grid>
+    </Grid >
 
-  return (
+  const uploadFlase =
     <Grid container className={classes.root} spacing={3} justifyContent="center">
       <Grid item xs={6}>
         <Paper variant="outlined" elevation={3} className={classes.paper}>
@@ -249,5 +245,8 @@ export default function Dropzone(props: Props) {
         </Paper>
       </Grid>
     </Grid>
-  )
+
+  // const diabled_button = (files.length === 0)
+
+  return (uploading ? upload : uploadFlase)
 }
