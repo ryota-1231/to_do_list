@@ -16,6 +16,7 @@ import Slide from '@material-ui/core/Slide'
 import { TransitionProps } from '@material-ui/core/transitions/transition'
 import TextField from '@material-ui/core/TextField'
 import Box from '@material-ui/core/Box'
+import Dropzone from '../components/dropzone';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -161,7 +162,7 @@ export default function ToDoList() {
                     <div className={classes.taskLabel}>説明</div>
                     <TextField id="task-title" variant="outlined" multiline rows={10} className={classes.descriptionText} />
                   </Box>
-                  ファイル添付
+                  <Dropzone />
                 </Paper>
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
